@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative 'rh_cloud_rhc_worker/version'
+require_relative 'rhc_cloud_connector_worker/version'
 require_relative 'yggdrasil_services_pb'
 
-module RhCloudRhcWorker
+module RhcCloudConnectorWorker
   class MessageDispatchingServer < Yggdrasil::Worker::Service
     def send(data, _request)
       GRPC.logger.debug("Received message: #{data}")

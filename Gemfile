@@ -2,5 +2,5 @@
 
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in rh_cloud_rhc_worker.gemspec
+# Specify your gem's dependencies in rhc-cloud-connector-worker.gemspec
 gemspec
