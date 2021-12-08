@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative 'rh_cloud_rhc_worker/version'
+require_relative 'rhc_cloud_connector_worker/version'
 require_relative 'yggdrasil_services_pb'
 require_relative 'message_dispatching_server'
 
-module RhCloudRhcWorker
+module RhcCloudConnectorWorker
   class Error < StandardError; end
 
   class Service
