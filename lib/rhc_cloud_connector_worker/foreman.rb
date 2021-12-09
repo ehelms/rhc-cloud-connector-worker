@@ -6,12 +6,18 @@ require 'rest-client'
 
 module RhcCloudConnectorWorker
   class Foreman
-    def initialize
-      @address = Settings.foreman.address
-      @require_ssl = Settings.foreman.require_ssl
-      @ssl_ca_file = Settings.foreman.ssl_ca_file
-      @token = Settings.foreman.token
-      @user = Settings.foreman.user
+    def initialize(
+      address: Settings.foreman.address,
+      require_ssl: Settings.foreman.require_ssl,
+      ssl_ca_file: Settings.foreman.ssl_ca_file,
+      token: Settings.foreman.token,
+      user: Settings.foreman.user
+    )
+      @address = address
+      @require_ssl = require_ssl
+      @ssl_ca_file = ssl_ca_file
+      @token = token
+      @user = user
     end
 
     def pass(metadata)

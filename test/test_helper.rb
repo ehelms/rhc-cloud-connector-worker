@@ -6,3 +6,4 @@ require 'rhc_cloud_connector_worker'
 
 require 'minitest/autorun'
 require 'mocha/minitest'
+require 'webmock/minitest'
