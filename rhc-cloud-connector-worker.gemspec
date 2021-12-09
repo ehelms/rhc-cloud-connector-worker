@@ -31,6 +31,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'config'
   spec.add_dependency 'grpc'
+  spec.add_dependency 'rest-client'
 
   spec.add_development_dependency 'grpc-tools'
   spec.add_development_dependency 'minitest', '~> 5.0'

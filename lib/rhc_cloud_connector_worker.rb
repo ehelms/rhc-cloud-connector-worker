@@ -1,52 +1,41 @@
 # frozen_string_literal: true
 
+# Initialization code
+
+require 'config'
+
 require_relative 'rhc_cloud_connector_worker/version'
-require_relative 'yggdrasil_services_pb'
-require_relative 'message_dispatching_server'
+require_relative 'rhc_cloud_connector_worker/service'
 
 module RhcCloudConnectorWorker
   class Error < StandardError; end
 
-  class Service
-    def initialize(initial_socket:, pid:)
-      @initial_socket = convert_socket(initial_socket)
-      @pid = pid
-    end
+  class Initializer
+    def start
+      Config.setup do |config|
+        config.const_name = 'Settings'
+        config.use_env = true
+        config.env_prefix = 'CC_WORKER'
+        config.env_separator = '__'
+        config.env_converter = :downcase
+        config.env_parse_values = true
+      end
 
-    def start_server
-      session_address = perform_hadshake
-
-      return unless session_address
-
-      session_address = convert_socket(session_address) if session_address
-
-      grpc_server = GRPC::RpcServer.new
-      grpc_server.add_http2_port(session_address, :this_port_is_insecure)
-      grpc_server.handle(MessageDispatchingServer)
-      # Runs the server with SIGHUP, SIGINT and SIGQUIT signal handlers to
-      #   gracefully shutdown.
-      # User could also choose to run server via call to run_till_terminated
-      grpc_server.run_till_terminated_or_interrupted([1, 'int', 'SIGQUIT'])
-    end
-
-    private
-
-    def perform_hadshake
-      ygg_stub = Yggdrasil::Dispatcher::Stub.new(@initial_socket, :this_channel_is_insecure)
-      response = ygg_stub.register(
-        ::Yggdrasil::RegistrationRequest.new(
-          handler: 'foreman_rh_cloud',
-          pid: @pid,
-          detached_content: false
-        )
+      Config.load_and_set_settings(
+        File.join(__dir__, '..', 'config', 'settings.yml'),
+        '/etc/rhc-cloud-connector-worker/settings.yml',
+        File.join(__dir__, '..', 'config', 'settings.local.yml')
       )
-
-      return response.address if response.registered
-    end
-
-    def convert_socket(original)
-      original = "unix:#{original}" if original.start_with?('@')
-      original.sub('unix:@', 'unix-abstract:')
     end
   end
+
+  def self.initializer
+    @initializer ||= Initializer.new
+  end
+
+  def self.init
+    initializer.start
+  end
 end
+
+RhcCloudConnectorWorker.init
